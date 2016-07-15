@@ -7,8 +7,9 @@ describe WordyNumber do
       it "scans the DEFAULT dictionary" do
         dh = subject.dict_hash
         expect(dh.keys.size).to equal WordyNumber::DEFAULT_DICT_FACTS[:number_of_keys]
-        expect(dh.keys.map{|k| dh[k].size}.reduce(:+)).to equal WordyNumber::DEFAULT_DICT_FACTS[:number_of_words]
+        expect(dh.keys.map{|k| dh[k].size}.reduce(:+)).to eq WordyNumber::DEFAULT_DICT_FACTS[:number_of_words]
       end
+      it "sanitizes the passed number and makes it available through #num method"
     end
     context "With user-dictionary provided" do
     end
@@ -27,6 +28,9 @@ describe WordyNumber do
 
   describe "PRIVATE INTERFACE (for developer)" do
     describe "#scan_dict!" do
+    end
+
+    describe "#sanitize_number!" do
     end
   end
 end

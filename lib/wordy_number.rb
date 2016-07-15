@@ -1,4 +1,14 @@
+require_relative 'dict_word'
+
 class WordyNumber
+
+  # Dictioary hash structures looks like following
+  # dict_hash = {
+  # 1 => [{:word_form=>"a", :numeric_form=>"2"}],
+  # ,...,
+  # 23 => [{:word_form=>"disestablismentarianism", :numeric_form=>"34737822547636827426476"},
+  #        {:word_form=>"electroencephalographic", :numeric_form=>"35328763623742564727442"}],
+  # }
 
   DICT_DIR = File.expand_path("../public", File.dirname(__FILE__))
   DEFAULT_DICT_FILE_NAME = "wordsEn.txt"
@@ -43,9 +53,8 @@ class WordyNumber
     # load dictionary
     File.open(dict_file_path, "r") do |file|
       file.each_line do |line|
-        line.strip!
         dh[line.length] = [] unless dh[line.length]
-        dh[line.length] << line
+        dh[line.length] << DictWord.new(line)
       end
     end
 
