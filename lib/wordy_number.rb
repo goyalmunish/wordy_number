@@ -40,7 +40,14 @@ class WordyNumber
     dh.keys.each{ |key| puts "#{key} -> #{dh[key].size}" }
   end
 
-  # TODO: before feeding the word here, we have to split it at the places of 1's
+  # it enhances the performance of long numbers carrying 1s
+  def split_arnd_1_and_find_matches(num_str=self.num)
+    results = num_str.split("1").map do |sub_num_str|
+      find_all_matches(sub_num_str)
+    end
+    self.class.concat_array_of_lists_of_strings(results, "-1-")
+  end
+
   def find_all_matches(num_str=self.num, pattern_length=num_str.length)  # can the order cause issue here
     patterns = []
     if num_str.size == 0  # first deal with the edge cases

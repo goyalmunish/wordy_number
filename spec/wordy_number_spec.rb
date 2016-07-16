@@ -38,6 +38,17 @@ describe WordyNumber do
     end
   end
 
+  describe "#split_arnd_1_and_find_matches" do
+    it "returns wordy patterns" do
+      expect(WordyNumber.new("225563").split_arnd_1_and_find_matches)
+      .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
+      expect(WordyNumber.new("66473").split_arnd_1_and_find_matches)
+      .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE 66-HR-3 66-IS-3 NO-IS-3 MN-473 NO-4-RF 66473 664-RF))
+      expect(WordyNumber.new("8587071016").split_arnd_1_and_find_matches)
+      .to include(*["8-JUS-07-1-0-1-6", "ULT-707-1-0-1-6", "85-UP-07-1-0-1-6", "85-US-07-1-0-1-6", "85-VS-07-1-0-1-6", "858707-1-0-1-6"])
+    end
+  end
+
   describe "#dict_hash" do
     subject { WordyNumber.new }
     it "returns non-empty hash with number as keys" do
