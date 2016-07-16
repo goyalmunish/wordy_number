@@ -38,6 +38,25 @@ describe WordyNumber do
     end
   end
 
+  describe ".filtered_list" do
+    # TODO: Currently I am calling `new` and `find_all_matches` methods here for ease
+    # but, we should directly pass a list of strings
+    it "filters out patterns with consecutive digits" do
+      expect(WordyNumber.filtered_list(WordyNumber.new("225563").find_all_matches))
+      .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME 2-ALL-OF BBL-JOE AB-5-JOE AB-KL-OF AC-5-LO-3 CC-LL-MD))
+      expect(WordyNumber.filtered_list(WordyNumber.new("225563").find_all_matches))
+      .to_not include(*%w(CALL-63 BBL-563 AC-55-OF AC-5563 225-LO-3 2255-OF))
+      expect(WordyNumber.filtered_list(WordyNumber.new("66473").find_all_matches))
+      .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE NO-IS-3 NO-4-RF))
+      expect(WordyNumber.filtered_list(WordyNumber.new("66473").find_all_matches))
+      .to_not include(*%w(66-HR-3 66-IS-3 MN-473 66473 664-RF))
+      expect(WordyNumber.filtered_list(WordyNumber.new("8587071016").find_all_matches))
+      .to eq([])
+      expect(WordyNumber.filtered_list(WordyNumber.new("8587071016").find_all_matches))
+      .to_not include(*["8-JUS-071016", "ULT-7071016", "85-UP-071016", "85-US-071016", "85-VS-071016", "8587071016"])
+    end
+  end
+
   describe "#split_arnd_1_and_find_matches" do
     it "returns wordy patterns" do
       expect(WordyNumber.new("225563").split_arnd_1_and_find_matches)

@@ -17,6 +17,7 @@ class WordyNumber
     number_of_keys: 25,
     number_of_words: 109582,
   }
+  DEFAULT_SEPARATOR = "-"
 
   attr_accessor :num, :dict, :patterns
 
@@ -38,6 +39,11 @@ class WordyNumber
   def display_dict_stats
     dh = dict_hash
     dh.keys.each{ |key| puts "#{key} -> #{dh[key].size}" }
+  end
+
+  # filter out patterns with consecutive digits
+  def self.filtered_list(list_of_num_strs)
+    list_of_num_strs.delete_if{ |pattern| pattern.split(DEFAULT_SEPARATOR).join("") =~ /\d{2}/ }
   end
 
   # it enhances the performance of long numbers carrying 1s
@@ -86,7 +92,7 @@ class WordyNumber
     return patterns.uniq
   end
 
-  def self.concat_array_of_lists_of_strings(array_of_lists, separator="-")
+  def self.concat_array_of_lists_of_strings(array_of_lists, separator=DEFAULT_SEPARATOR)
     # remove empty elements
     array_of_lists.each do |list|
       list.delete_if{ |elem| elem.length == 0 }
