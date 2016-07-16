@@ -9,9 +9,26 @@ describe WordyNumber do
         expect(dh.keys.size).to equal WordyNumber::DEFAULT_DICT_FACTS[:number_of_keys]
         expect(dh.keys.map{|k| dh[k].size}.reduce(:+)).to eq WordyNumber::DEFAULT_DICT_FACTS[:number_of_words]
       end
-      it "sanitizes the passed number and makes it available through #num method"
     end
     context "With user-dictionary provided" do
+    end
+  end
+
+  describe "#set_num" do
+    subject { WordyNumber.new }
+    it "removes punctuations and whitespaces" do
+      expect(subject.set_num(" \n k8i0 4568M0! ").num).to eq("8045680")
+    end
+  end
+
+  describe "#dict_hash" do
+    subject { WordyNumber.new }
+    it "returns non-empty hash with number as keys" do
+      expect(subject.dict_hash).to be_an(Hash)
+      expect(subject.dict_hash.keys.size).to be > 0
+      subject.dict_hash.keys.each do |key|
+        expect(key).to be_an(Integer)
+      end
     end
   end
 
@@ -28,54 +45,55 @@ describe WordyNumber do
   end
 
   describe "#find_all_matches" do
+    subject { WordyNumber.new }
     it "returns wordy patterns" do
-      expect(WordyNumber.new("225563").find_all_matches)
+      expect(subject.set_num("225563").find_all_matches)
       .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
-      expect(WordyNumber.new("66473").find_all_matches)
+      expect(subject.set_num("66473").find_all_matches)
       .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE 66-HR-3 66-IS-3 NO-IS-3 MN-473 NO-4-RF 66473 664-RF))
-      expect(WordyNumber.new("8587071016").find_all_matches)
+      expect(subject.set_num("8587071016").find_all_matches)
       .to include(*["8-JUS-071016", "ULT-7071016", "85-UP-071016", "85-US-071016", "85-VS-071016", "8587071016"])
     end
   end
 
-  describe ".filtered_list" do
+  describe "#filtered_list" do
     # TODO: Currently I am calling `new` and `find_all_matches` methods here for ease
     # but, we should directly pass a list of strings
+    subject { WordyNumber.new }
     it "filters out patterns with consecutive digits" do
-      expect(WordyNumber.filtered_list(WordyNumber.new("225563").find_all_matches))
-      .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME 2-ALL-OF BBL-JOE AB-5-JOE AB-KL-OF AC-5-LO-3 CC-LL-MD))
-      expect(WordyNumber.filtered_list(WordyNumber.new("225563").find_all_matches))
-      .to_not include(*%w(CALL-63 BBL-563 AC-55-OF AC-5563 225-LO-3 2255-OF))
-      expect(WordyNumber.filtered_list(WordyNumber.new("66473").find_all_matches))
-      .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE NO-IS-3 NO-4-RF))
-      expect(WordyNumber.filtered_list(WordyNumber.new("66473").find_all_matches))
-      .to_not include(*%w(66-HR-3 66-IS-3 MN-473 66473 664-RF))
-      expect(WordyNumber.filtered_list(WordyNumber.new("8587071016").find_all_matches))
-      .to eq([])
-      expect(WordyNumber.filtered_list(WordyNumber.new("8587071016").find_all_matches))
-      .to_not include(*["8-JUS-071016", "ULT-7071016", "85-UP-071016", "85-US-071016", "85-VS-071016", "8587071016"])
+      subject.set_num("225563").find_all_matches
+      expect(subject.filtered_list)
+        .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME 2-ALL-OF BBL-JOE AB-5-JOE AB-KL-OF AC-5-LO-3 CC-LL-MD))
+      subject.set_num("225563").find_all_matches
+      expect(subject.filtered_list)
+        .to_not include(*%w(CALL-63 BBL-563 AC-55-OF AC-5563 225-LO-3 2255-OF))
+      subject.set_num("66473").find_all_matches
+      expect(subject.filtered_list)
+        .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE NO-IS-3 NO-4-RF))
+      subject.set_num("66473").find_all_matches
+      expect(subject.filtered_list)
+        .to_not include(*%w(66-HR-3 66-IS-3 MN-473 66473 664-RF))
+      subject.set_num("8587071016").find_all_matches
+      expect(subject.filtered_list)
+        .to eq([])
+      subject.set_num("8587071016").find_all_matches
+      expect(subject.filtered_list)
+        .to_not include(*["8-JUS-071016", "ULT-7071016", "85-UP-071016", "85-US-071016", "85-VS-071016", "8587071016"])
+    end
+    it "raises error unless either num is set of explicit list of strings is passed as argument" do
+      expect{subject.filtered_list}.to raise_error(Exception)
     end
   end
 
   describe "#split_arnd_1_and_find_matches" do
     it "returns wordy patterns" do
-      expect(WordyNumber.new("225563").split_arnd_1_and_find_matches)
-      .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
-      expect(WordyNumber.new("66473").split_arnd_1_and_find_matches)
-      .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE 66-HR-3 66-IS-3 NO-IS-3 MN-473 NO-4-RF 66473 664-RF))
-      expect(WordyNumber.new("8587071016").split_arnd_1_and_find_matches)
-      .to include(*["8-JUS-07-1-0-1-6", "ULT-707-1-0-1-6", "85-UP-07-1-0-1-6", "85-US-07-1-0-1-6", "85-VS-07-1-0-1-6", "858707-1-0-1-6"])
-    end
-  end
-
-  describe "#dict_hash" do
     subject { WordyNumber.new }
-    it "returns non-empty hash with number as keys" do
-      expect(subject.dict_hash).to be_an(Hash)
-      expect(subject.dict_hash.keys.size).to be > 0
-      subject.dict_hash.keys.each do |key|
-        expect(key).to be_an(Integer)
-      end
+      expect(subject.set_num("225563").split_arnd_1_and_find_matches)
+      .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
+      expect(subject.set_num("66473").split_arnd_1_and_find_matches)
+      .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE 66-HR-3 66-IS-3 NO-IS-3 MN-473 NO-4-RF 66473 664-RF))
+      expect(subject.set_num("8587071016").split_arnd_1_and_find_matches)
+      .to include(*["8-JUS-07-1-0-1-6", "ULT-707-1-0-1-6", "85-UP-07-1-0-1-6", "85-US-07-1-0-1-6", "85-VS-07-1-0-1-6", "858707-1-0-1-6"])
     end
   end
 

@@ -19,15 +19,28 @@ class WordyNumber
   }
   DEFAULT_SEPARATOR = "-"
 
-  attr_accessor :num, :dict, :patterns
+  attr_accessor :dict
+  attr_accessor :num, :num_patterns, :num_filtered_patterns
 
   # dictionary is expected to have one word per line
-  def initialize(user_number="", user_dictionary=DEFAULT_DICT_FILE_PATH)
-    @num = user_number
-    sanitize_number!
+  def initialize(user_dictionary=DEFAULT_DICT_FILE_PATH)
     @dict = user_dictionary
     scan_dict!(dict)
-    @patterns = []
+  end
+
+  def num=(user_number)
+    @num = user_number.to_s
+    @num.strip!
+    @num.gsub!(/\D/, "")
+
+    @num
+  end
+
+  # set_num() is kind of alias to num=(), but helps in chaining
+  def set_num(user_number)
+    self.num = user_number
+
+    self
   end
 
   def dict_hash
@@ -41,20 +54,7 @@ class WordyNumber
     dh.keys.each{ |key| puts "#{key} -> #{dh[key].size}" }
   end
 
-  # filter out patterns with consecutive digits
-  def self.filtered_list(list_of_num_strs)
-    list_of_num_strs.delete_if{ |pattern| pattern.split(DEFAULT_SEPARATOR).join("") =~ /\d{2}/ }
-  end
-
-  # it enhances the performance of long numbers carrying 1s
-  def split_arnd_1_and_find_matches(num_str=self.num)
-    results = num_str.split("1").map do |sub_num_str|
-      find_all_matches(sub_num_str)
-    end
-    self.class.concat_array_of_lists_of_strings(results, "-1-")
-  end
-
-  def find_all_matches(num_str=self.num, pattern_length=num_str.length)  # can the order cause issue here
+  def find_all_matches(num_str=self.num, original_call=true, pattern_length=num_str.length)
     patterns = []
     if num_str.size == 0  # first deal with the edge cases
       return patterns
@@ -80,16 +80,21 @@ class WordyNumber
             str1 = matched_index > 0 ? num_str[0..(matched_index - 1)] : ""
             str2 = dict_word.word_form  # it has word_form, but str1 and str3 still have numeric_form
             str3 = num_str[(matched_index + pattern_length)..-1]
-            patterns += self.class.concat_array_of_lists_of_strings([find_all_matches(str1), [str2], find_all_matches(str3)])
+            patterns += self.class.concat_array_of_lists_of_strings([find_all_matches(str1, false), [str2], find_all_matches(str3, false)])
           end
         end
       end
-      patterns += find_all_matches(num_str, pattern_length-1)
+      patterns += find_all_matches(num_str, false, pattern_length-1)
     else
       raise "NotReachableCode"
     end
+    patterns.uniq!
 
-    return patterns.uniq
+    if original_call
+      self.num_patterns = patterns
+    end
+
+    return patterns
   end
 
   def self.concat_array_of_lists_of_strings(array_of_lists, separator=DEFAULT_SEPARATOR)
@@ -113,13 +118,26 @@ class WordyNumber
     result
   end
 
-  private
+  # filter out patterns with consecutive digits
+  def filtered_list(list_of_num_strs=self.num_patterns.clone)
+    unless list_of_num_strs
+      raise "Invalid Argument"
+    end
+    list_of_num_strs.delete_if{ |pattern| pattern.split(DEFAULT_SEPARATOR).join("") =~ /\d{2}/ }
+    self.num_filtered_patterns = list_of_num_strs
 
-  def sanitize_number!
-    number_str = self.num
-    number_str.strip!
-    self.num = number_str
+    self.num_filtered_patterns
   end
+
+  # it enhances the performance of long numbers carrying 1s
+  def split_arnd_1_and_find_matches(num_str=self.num)
+    results = num_str.split("1").map do |sub_num_str|
+      find_all_matches(sub_num_str)
+    end
+    self.class.concat_array_of_lists_of_strings(results, "-1-")
+  end
+
+  private
 
   def scan_dict!(dict_file_path=DEFAULT_DICT_FILE_PATH)
     # reset dict_hash
