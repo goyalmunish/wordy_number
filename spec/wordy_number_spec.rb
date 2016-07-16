@@ -15,14 +15,14 @@ describe WordyNumber do
     end
   end
 
-  describe ".concat_3_str_lists" do
-    it "returns product of 3 given lists" do
-      expect(WordyNumber.concat_3_str_lists(["111", "222", "333"], ["aa", "bb"], ["A", "A"]))
+  describe ".concat_array_of_lists_of_strings" do
+    it "returns concatenated prodcts of given array of lists of strings" do
+      expect(WordyNumber.concat_array_of_lists_of_strings([["111", "222", "333"], ["aa", "bb"], ["A", "A"]]))
       .to eq(["111-aa-A", "111-aa-A", "111-bb-A", "111-bb-A", "222-aa-A", "222-aa-A", "222-bb-A",
               "222-bb-A", "333-aa-A", "333-aa-A", "333-bb-A", "333-bb-A"])
-      expect(WordyNumber.concat_3_str_lists([""], ["aa", "bb"], ["A", "A"]))
+      expect(WordyNumber.concat_array_of_lists_of_strings([[""], ["aa", "bb"], ["A", "A"]]))
       .to eq(["aa-A", "aa-A", "bb-A", "bb-A"])
-      expect(WordyNumber.concat_3_str_lists([""], ["aa", "bb"], [""]))
+      expect(WordyNumber.concat_array_of_lists_of_strings([[""], ["aa", "bb"], [""]]))
       .to eq(["aa", "bb"])
     end
   end

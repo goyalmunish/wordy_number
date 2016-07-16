@@ -67,7 +67,7 @@ class WordyNumber
             str1 = matched_index > 0 ? num_str[0..(matched_index - 1)] : ""
             str2 = dict_word.word_form  # it has word_form, but str1 and str3 still have numeric_form
             str3 = num_str[(matched_index + pattern_length)..-1]
-            patterns += self.class.concat_3_str_lists(find_all_matches(str1), [str2], find_all_matches(str3))
+            patterns += self.class.concat_array_of_lists_of_strings([find_all_matches(str1), [str2], find_all_matches(str3)])
           end
         end
       end
@@ -79,22 +79,22 @@ class WordyNumber
     return patterns.uniq
   end
 
-  def self.concat_3_str_lists(l_left, l_middle, l_right, separator="-")
+  def self.concat_array_of_lists_of_strings(array_of_lists, separator="-")
     # remove empty elements
-    [l_left, l_middle, l_right].each do |list|
+    array_of_lists.each do |list|
       list.delete_if{ |elem| elem.length == 0 }
     end
     # remove empty lists
-    lists = [l_left, l_middle, l_right].select{ |list| list.size > 0 }
+    array_of_lists.select!{ |list| list.size > 0 }
 
-    # calculat product
-    result = case lists.size
-    when 3
-      lists[0].product(lists[1], lists[2]).map{ |elem| elem.join(separator) }
-    when 2
-      lists[0].product(lists[1]).map{ |elem| elem.join(separator) }
-    when 1
-      lists[0]
+    # calculate product
+    result = if array_of_lists.size > 1
+      array_of_lists[0].product(*array_of_lists[1..-1]).map{ |elem| elem.join(separator) }
+    elsif array_of_lists.size == 1
+      array_of_lists[0]
+    else
+      # array_of_lists.size == 0
+      []
     end
 
     result
