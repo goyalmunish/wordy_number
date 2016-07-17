@@ -36,13 +36,6 @@ class WordyNumber
     @num
   end
 
-  # set_num() is kind of alias to num=(), but helps in chaining
-  def set_num(user_number)
-    self.num = user_number
-
-    self
-  end
-
   def dict_hash
     @dict_hash = {} unless @dict_hash
 
@@ -60,6 +53,45 @@ class WordyNumber
     # find matches and filter them
     split_arnd_0_1_n_find_matches
     filtered_list
+  end
+
+  def self.concat_array_of_lists_of_strings(array_of_lists, separator=DEFAULT_SEPARATOR)
+    # remove empty elements
+    array_of_lists.each do |list|
+      list.delete_if{ |elem| elem.length == 0 }
+    end
+    # remove empty lists
+    array_of_lists.select!{ |list| list.size > 0 }
+
+    # calculate product
+    result = if array_of_lists.size > 1
+      array_of_lists[0].product(*array_of_lists[1..-1]).map{ |elem| elem.join(separator) }
+    elsif array_of_lists.size == 1
+      array_of_lists[0]
+    else
+      # array_of_lists.size == 0
+      []
+    end
+
+    result
+  end
+
+  def self.join_numbers_together_in_str(num_str, separator=DEFAULT_SEPARATOR)
+    res_str = num_str.gsub(/(\d)#{DEFAULT_SEPARATOR}+(\d)/, '\1\2')
+    if res_str != num_str
+      return join_numbers_together_in_str(res_str)
+    else
+      return res_str
+    end
+  end
+
+  private
+
+  # set_num() is kind of alias to num=(), but helps in chaining
+  def set_num(user_number)
+    self.num = user_number
+
+    self
   end
 
   def find_all_matches(num_str=self.num, original_call=true, pattern_length=num_str.length)
@@ -105,36 +137,6 @@ class WordyNumber
     return patterns
   end
 
-  def self.concat_array_of_lists_of_strings(array_of_lists, separator=DEFAULT_SEPARATOR)
-    # remove empty elements
-    array_of_lists.each do |list|
-      list.delete_if{ |elem| elem.length == 0 }
-    end
-    # remove empty lists
-    array_of_lists.select!{ |list| list.size > 0 }
-
-    # calculate product
-    result = if array_of_lists.size > 1
-      array_of_lists[0].product(*array_of_lists[1..-1]).map{ |elem| elem.join(separator) }
-    elsif array_of_lists.size == 1
-      array_of_lists[0]
-    else
-      # array_of_lists.size == 0
-      []
-    end
-
-    result
-  end
-
-  def self.join_numbers_together_in_str(num_str, separator=DEFAULT_SEPARATOR)
-    res_str = num_str.gsub(/(\d)#{DEFAULT_SEPARATOR}+(\d)/, '\1\2')
-    if res_str != num_str
-      return join_numbers_together_in_str(res_str)
-    else
-      return res_str
-    end
-  end
-
   # filter out patterns with consecutive digits
   def filtered_list(list_of_num_strs=self.num_patterns.clone)
     unless list_of_num_strs
@@ -145,8 +147,6 @@ class WordyNumber
 
     self.num_filtered_patterns
   end
-
-  private
 
   # it enhances the performance of long numbers carrying 1s or 0s
   def split_arnd_0_1_n_find_matches(num_str=self.num)
