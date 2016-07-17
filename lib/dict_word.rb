@@ -46,6 +46,7 @@ class DictWord
     word = word_form
     word.strip!
     word.upcase!
+    word.gsub!(/[^A-Z]/, "")
     self.word_form = word
   end
 

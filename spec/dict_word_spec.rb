@@ -3,7 +3,7 @@ require_relative "../lib/dict_word"
 describe DictWord do
   describe "#new" do
     it "sanitizes the passed word and makes it available through #word_form method" do
-      ["abc", " abc  ", "\nabc\n", "\rabc\r", "\n\r abc \n\r", "\r\n abc \r\n", "ABC"].each do |word|
+      ["abc", " abc  ", "\nabc\n", "\rabc\r", "\n\r abc \n\r", "\r\n abc \r\n", "858-A7!BC-$", "ABC"].each do |word|
         dw = DictWord.new(word)
         expect(dw.word_form).to eq "ABC"
       end

@@ -118,6 +118,15 @@ class WordyNumber
     result
   end
 
+  def self.join_numbers_together_in_str(num_str, separator=DEFAULT_SEPARATOR)
+    res_str = num_str.gsub(/(\d)#{DEFAULT_SEPARATOR}+(\d)/, '\1\2')
+    if res_str != num_str
+      return join_numbers_together_in_str(res_str)
+    else
+      return res_str
+    end
+  end
+
   # filter out patterns with consecutive digits
   def filtered_list(list_of_num_strs=self.num_patterns.clone)
     unless list_of_num_strs
@@ -129,12 +138,27 @@ class WordyNumber
     self.num_filtered_patterns
   end
 
-  # it enhances the performance of long numbers carrying 1s
-  def split_arnd_1_and_find_matches(num_str=self.num)
-    results = num_str.split("1").map do |sub_num_str|
+  # it enhances the performance of long numbers carrying 1s or 0s
+  def split_arnd_0_1_n_find_matches(num_str=self.num)
+    # split given number_string at 0's and 1's
+    splits = num_str.gsub(/[^01]/, "").split("")
+    split_num_str = num_str.split(/[01]/)
+    # obtain patterns for each sub_number_string
+    split_results = split_num_str.map do |sub_num_str|
       find_all_matches(sub_num_str)
     end
-    self.class.concat_array_of_lists_of_strings(results, "-1-")
+    # obtain combined result
+    combined_splits_and_split_results = []
+    split_results.each_index do |index|
+      combined_splits_and_split_results << split_results[index]
+      combined_splits_and_split_results << [splits[index]] if index <= splits.length - 1
+    end
+    combined_splits_and_split_results.select!{ |x| x.length > 0 }
+    results = self.class.concat_array_of_lists_of_strings(combined_splits_and_split_results)
+    # join numbers togeter in each results element
+    results.map!{ |str| self.class.join_numbers_together_in_str(str) }
+
+    results
   end
 
   private
