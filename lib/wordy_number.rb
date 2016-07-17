@@ -54,6 +54,14 @@ class WordyNumber
     dh.keys.each{ |key| puts "#{key} -> #{dh[key].size}" }
   end
 
+  def set_num_and_find_matches(user_number)
+    set_num(user_number)
+
+    # find matches and filter them
+    split_arnd_0_1_n_find_matches
+    filtered_list
+  end
+
   def find_all_matches(num_str=self.num, original_call=true, pattern_length=num_str.length)
     patterns = []
     if num_str.size == 0  # first deal with the edge cases
@@ -138,6 +146,8 @@ class WordyNumber
     self.num_filtered_patterns
   end
 
+  private
+
   # it enhances the performance of long numbers carrying 1s or 0s
   def split_arnd_0_1_n_find_matches(num_str=self.num)
     # split given number_string at 0's and 1's
@@ -157,11 +167,11 @@ class WordyNumber
     results = self.class.concat_array_of_lists_of_strings(combined_splits_and_split_results)
     # join numbers togeter in each results element
     results.map!{ |str| self.class.join_numbers_together_in_str(str) }
+    # set num_patterns
+    self.num_patterns = results
 
     results
   end
-
-  private
 
   def scan_dict!(dict_file_path=DEFAULT_DICT_FILE_PATH)
     # reset dict_hash

@@ -25,6 +25,7 @@ DEPENDENCIES
   awesome_print
   byebug
   rspec (~> 3.0)
+  rspec-mocks
 
 BUNDLED WITH
    1.12.5

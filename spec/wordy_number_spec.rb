@@ -14,6 +14,26 @@ describe WordyNumber do
     end
   end
 
+  describe "#set_num_and_find_matches" do
+    subject { WordyNumber.new }
+    it "returns filtered matches" do
+      expect(subject.set_num_and_find_matches("2255")).to eq(["BALK", "BALL", "CALK", "CALL", "2-ALL", "BBL-5", "CAL-5", "AB-KL", "AB-LL", "AC-KL", "AC-LL", "2-AL-5", "BB-KL", "BB-LL", "CA-KL", "CA-LL", "CC-KL", "CC-LL", "2-CL-5"])
+    end
+    it "it sets num, finds matches and filters them" do
+      # TODO: To fix this test, as it is brittle as it depends on how something is implemented
+      @num = double("num")
+      @sanitized_num = double("sanitized_num")
+      allow(subject).to receive(:num).and_return(@sanitized_num)
+      allow(subject).to receive(:set_num).with(@num)
+      allow(subject).to receive(:split_arnd_0_1_n_find_matches)
+      allow(subject).to receive(:filtered_list)
+      subject.set_num_and_find_matches(@num)
+      expect(subject).to have_received(:set_num)
+      expect(subject).to have_received(:split_arnd_0_1_n_find_matches)
+      expect(subject).to have_received(:filtered_list)
+    end
+  end
+
   describe "#set_num" do
     subject { WordyNumber.new }
     it "removes punctuations and whitespaces" do
@@ -92,19 +112,19 @@ describe WordyNumber do
     end
   end
 
-  describe "#split_arnd_0_1_n_find_matches" do
-    subject { WordyNumber.new }
-    it "returns wordy patterns" do
-      expect(subject.set_num("225563").split_arnd_0_1_n_find_matches)
-      .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
-      expect(subject.set_num("66473").split_arnd_0_1_n_find_matches)
-      .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE 66-HR-3 66-IS-3 NO-IS-3 MN-473 NO-4-RF 66473 664-RF))
-      expect(subject.set_num("8587071016").split_arnd_0_1_n_find_matches)
-      .to include(*["8-JUS-071016", "ULT-7071016", "85-UP-071016", "85-US-071016", "85-VS-071016", "8587071016"])
-    end
-  end
-
   describe "PRIVATE INTERFACE (for developer)" do
+    describe "#split_arnd_0_1_n_find_matches" do
+      subject { WordyNumber.new }
+      it "returns wordy patterns" do
+        expect(subject.set_num("225563").send(:split_arnd_0_1_n_find_matches))
+        .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
+        expect(subject.set_num("66473").send(:split_arnd_0_1_n_find_matches))
+        .to include(*%w(MOIRE NOISE 6-MIRE NOIR-3 OOH-SE 66-HR-3 66-IS-3 NO-IS-3 MN-473 NO-4-RF 66473 664-RF))
+        expect(subject.set_num("8587071016").send(:split_arnd_0_1_n_find_matches))
+        .to include(*["8-JUS-071016", "ULT-7071016", "85-UP-071016", "85-US-071016", "85-VS-071016", "8587071016"])
+      end
+    end
+
     describe "#scan_dict!" do
     end
 
