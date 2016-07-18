@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Dictionary word replacements for a phone number}
   spec.description   = %q{It provides all possible word replacements from a given dictionary (or default dictionary) for a given number.}
-  spec.homepage      = 'https://github.com/goyalmunish/wordy_numbers'
+  spec.homepage      = 'https://github.com/goyalmunish/wordy_number'
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
