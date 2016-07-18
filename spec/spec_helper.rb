@@ -17,8 +17,11 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require 'awesome_print'
-require 'byebug'
+# require 'awesome_print'
+# require 'byebug'
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'wordy_number'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

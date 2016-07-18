@@ -1,13 +1,11 @@
-require_relative "../lib/wordy_number"
-
-describe WordyNumber do
+describe WordyNumber::WordyMatch do
   describe "#new" do
     context "With DEFAULT DICTIONARY" do
-      subject { WordyNumber.new }
+      subject { WordyNumber::WordyMatch.new }
       it "scans the dictionary" do
         dh = subject.dict_hash
-        expect(dh.keys.size).to equal WordyNumber::DEFAULT_DICT_FACTS[:number_of_keys]
-        expect(dh.keys.map{|k| dh[k].size}.reduce(:+)).to eq WordyNumber::DEFAULT_DICT_FACTS[:number_of_words]
+        expect(dh.keys.size).to equal WordyNumber::WordyMatch::DEFAULT_DICT_FACTS[:number_of_keys]
+        expect(dh.keys.map{|k| dh[k].size}.reduce(:+)).to eq WordyNumber::WordyMatch::DEFAULT_DICT_FACTS[:number_of_words]
       end
     end
     context "With user-dictionary provided" do
@@ -16,7 +14,7 @@ describe WordyNumber do
 
   describe "#display_matches" do
     context "With DEFAULT DICTIONARY" do
-      subject { WordyNumber.new }
+      subject { WordyNumber::WordyMatch.new }
       it "returns a hash of output with matches for given numbers file placed in 'public/' directory of the app, using 'num_file' option" do
         results = subject.display_matches num_file: "my_nums.txt"
         expect(results.keys.size).to be > 0
@@ -30,7 +28,7 @@ describe WordyNumber do
 
   describe "#set_num_and_find_matches" do
     context "With DEFAULT DICTIONARY" do
-      subject { WordyNumber.new }
+      subject { WordyNumber::WordyMatch.new }
       it "returns filtered matches" do
         expect(subject.set_num_and_find_matches("2255")).to eq(["BALK", "BALL", "CALK", "CALL", "2-ALL", "BBL-5", "CAL-5", "AB-KL", "AB-LL", "AC-KL", "AC-LL", "2-AL-5", "BB-KL", "BB-LL", "CA-KL", "CA-LL", "CC-KL", "CC-LL", "2-CL-5"])
       end
@@ -51,7 +49,7 @@ describe WordyNumber do
   end
 
   describe "#dict_hash" do
-    subject { WordyNumber.new }
+    subject { WordyNumber::WordyMatch.new }
     it "returns non-empty hash with number as keys" do
       expect(subject.dict_hash).to be_an(Hash)
       expect(subject.dict_hash.keys.size).to be > 0
@@ -63,18 +61,18 @@ describe WordyNumber do
 
   describe ".concat_array_of_lists_of_strings" do
     it "returns concatenated prodcts of given array of lists of strings" do
-      expect(WordyNumber.concat_array_of_lists_of_strings([["111", "222", "333"], ["aa", "bb"], ["A", "A"]]))
+      expect(WordyNumber::WordyMatch.concat_array_of_lists_of_strings([["111", "222", "333"], ["aa", "bb"], ["A", "A"]]))
       .to eq(["111-aa-A", "111-aa-A", "111-bb-A", "111-bb-A", "222-aa-A", "222-aa-A", "222-bb-A",
               "222-bb-A", "333-aa-A", "333-aa-A", "333-bb-A", "333-bb-A"])
-      expect(WordyNumber.concat_array_of_lists_of_strings([[""], ["aa", "bb"], ["A", "A"]]))
+      expect(WordyNumber::WordyMatch.concat_array_of_lists_of_strings([[""], ["aa", "bb"], ["A", "A"]]))
       .to eq(["aa-A", "aa-A", "bb-A", "bb-A"])
-      expect(WordyNumber.concat_array_of_lists_of_strings([[""], ["aa", "bb"], [""]]))
+      expect(WordyNumber::WordyMatch.concat_array_of_lists_of_strings([[""], ["aa", "bb"], [""]]))
       .to eq(["aa", "bb"])
     end
   end
 
   describe ".join_numbers_together_in_str" do
-    subject { WordyNumber }
+    subject { WordyNumber::WordyMatch }
     it "removes separator between numbers in a string" do
       expect(subject.join_numbers_together_in_str("8-JUS-0-7-1-0-1-6")).to eq("8-JUS-071016")
     end
@@ -82,7 +80,7 @@ describe WordyNumber do
 
   describe "PRIVATE INTERFACE (for developer)" do
     describe "#set_num" do
-      subject { WordyNumber.new }
+      subject { WordyNumber::WordyMatch.new }
       it "removes punctuations, whitespaces, and even alphabets" do
         expect(subject.send(:set_num, " \n k8i0 4568M0! ").num).to eq("8045680")
       end
@@ -90,7 +88,7 @@ describe WordyNumber do
 
     describe "#find_all_matches" do
       context "With DEFAULT DICTIONARY" do
-        subject { WordyNumber.new }
+        subject { WordyNumber::WordyMatch.new }
         it "returns wordy patterns, with each word/number in pattern separated by '-'" do
           expect(subject.send(:set_num, "225563").send(:find_all_matches))
           .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
@@ -105,7 +103,7 @@ describe WordyNumber do
     describe "#filtered_list" do
       # TODO: Currently I am calling `new` and `find_all_matches` methods here for ease
       # but, we should directly pass a list of strings
-      subject { WordyNumber.new }
+      subject { WordyNumber::WordyMatch.new }
       it "filters out patterns with consecutive digits" do
         subject.send(:set_num, "225563").send(:find_all_matches)
         expect(subject.send(:filtered_list))
@@ -133,7 +131,7 @@ describe WordyNumber do
 
     describe "#split_arnd_0_1_n_find_matches" do
       context "With DEFAULT DICTIONARY" do
-        subject { WordyNumber.new }
+        subject { WordyNumber::WordyMatch.new }
         it "returns wordy patterns" do
           expect(subject.send(:set_num, "225563").send(:split_arnd_0_1_n_find_matches))
           .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
