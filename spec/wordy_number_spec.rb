@@ -14,6 +14,20 @@ describe WordyNumber do
     end
   end
 
+  describe "#display_matches" do
+    context "With DEFAULT DICTIONARY" do
+      subject { WordyNumber.new }
+      it "returns a hash of output with matches for given numbers file placed in 'public/' directory of the app, using 'num_file' option" do
+        results = subject.display_matches num_file: "my_nums.txt"
+        expect(results.keys.size).to be > 0
+      end
+      it "instead of providing numbers file, the user can also provide comma-separated list of numbers using 'num_list' option" do
+        results = subject.display_matches num_list: [2255,225563,8587071016]
+        expect(results.keys.size).to be > 0
+      end
+    end
+  end
+
   describe "#set_num_and_find_matches" do
     context "With DEFAULT DICTIONARY" do
       subject { WordyNumber.new }
@@ -77,7 +91,7 @@ describe WordyNumber do
     describe "#find_all_matches" do
       context "With DEFAULT DICTIONARY" do
         subject { WordyNumber.new }
-        it "returns wordy patterns" do
+        it "returns wordy patterns, with each word/number in pattern separated by '-'" do
           expect(subject.send(:set_num, "225563").send(:find_all_matches))
           .to include(*%w(BALLO-3 BALK-ME BALL-OF CALL-ME CALL-63 2-ALL-OF BBL-JOE BBL-563 AB-5-JOE AB-KL-OF AC-5-LO-3 AC-55-OF AC-5563 CC-LL-MD 225-LO-3 2255-OF))
           expect(subject.send(:set_num, "66473").send(:find_all_matches))

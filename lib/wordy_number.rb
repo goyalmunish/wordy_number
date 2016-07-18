@@ -10,9 +10,9 @@ class WordyNumber
   #        {:word_form=>"electroencephalographic", :numeric_form=>"35328763623742564727442"}],
   # }
 
-  DICT_DIR = File.expand_path("../public", File.dirname(__FILE__))
+  PUBLIC_DIR = File.expand_path("../public", File.dirname(__FILE__))
   DEFAULT_DICT_FILE_NAME = "wordsEn.txt"
-  DEFAULT_DICT_FILE_PATH = File.expand_path(DEFAULT_DICT_FILE_NAME, DICT_DIR)
+  DEFAULT_DICT_FILE_PATH = File.expand_path(DEFAULT_DICT_FILE_NAME, PUBLIC_DIR)
   DEFAULT_DICT_FACTS = {
     number_of_keys: 25,
     number_of_words: 109582,
@@ -45,6 +45,50 @@ class WordyNumber
   def display_dict_stats
     dh = dict_hash
     dh.keys.each{ |key| puts "#{key} -> #{dh[key].size}" }
+  end
+
+  # sub = WordyNumber.new
+  # sub.display_matches num_file: "my_nums.txt"
+  # sub.display_matches num_list: [2255, 225563]
+  def display_matches(args = {num_file: nil, num_list: nil})
+    # get user inputs
+    num_file = args[:num_file]
+    num_list = args[:num_list]
+    num_file_path = File.expand_path(num_file, PUBLIC_DIR) if num_file
+    results = {}
+
+    # form numbers array
+    numbers = []
+    if num_file_path
+      File.open(num_file_path, "r") do |file|
+        file.each_line do |line|
+          numbers << line
+        end
+      end
+    elsif num_list.class == Array
+      numbers = num_list
+    else
+     # user hasn't provide num_file, so ask him/her explicitly
+      puts "Comma-separated list of numbers: "
+      numbers = gets.strip.split(",")
+    end
+
+    # get output
+    numbers.each do |number|
+      puts "---------------------------------------"
+      puts "Matches for #{number.to_s}"
+      matches = set_num_and_find_matches(number)
+      results[number.to_s] = matches
+      if matches.size > 0
+        matches.each do |match|
+          puts match
+        end
+      else
+        puts "No matches"
+      end
+    end
+
+    results
   end
 
   def set_num_and_find_matches(user_number)
@@ -173,7 +217,9 @@ class WordyNumber
     results
   end
 
-  def scan_dict!(dict_file_path=DEFAULT_DICT_FILE_PATH)
+  def scan_dict!(dict_file_path)
+    dict_file_path = dict_file_path || dict || DEFAULT_DICT_FILE_PATH
+
     # reset dict_hash
     dh = dict_hash
     dh.clear
